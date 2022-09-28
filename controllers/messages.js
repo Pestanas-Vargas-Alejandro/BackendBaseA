@@ -1,7 +1,13 @@
 const { request, response } = require("express")
 
 const rootMessages = (req=request,res=response)=> {
-    res.status (404).json({msg:'Mensajes'})
+    const {texto1, texto2} = req.query
+    if (!texto1 || !texto2){
+        res.status (400).json({
+            msg: "No se han pasado los parametros necesarios, este EndPoint ocupa los parametros 'texto1' y 'texto2'"
+        })
+    }
+    res.status (404).json({msg: texto1 + '' +texto2})
 }
 
 const hiMessages = (req=request,res=response)=> {
