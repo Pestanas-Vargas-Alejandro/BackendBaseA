@@ -11,7 +11,8 @@ const rootMessages = (req=request,res=response)=> {
 }
 
 const hiMessages = (req=request,res=response)=> {
-    res.status(402).json({msg:'Hola mundo'})
+    const {name} = req.params
+    res.status(402).json({msg:'Hola '+name})
 }
 
 const byeMessages = (req=request,res=response)=> {
