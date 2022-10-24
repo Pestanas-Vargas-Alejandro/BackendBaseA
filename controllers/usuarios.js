@@ -50,4 +50,28 @@ const getUserByID = async (req=request, res=response) =>{
     }
 }
 
-module.exports= {getUser,getUserByID}
+const deleteUserByID = async (req=request, res=response) =>{
+    const {id}= req.query
+    let conn;
+
+    try {
+        conn = await pool.getConnection()
+        const {affectedRows} = await conn.query( `UPDATE Usuarios SET Activo ='N' WHERE ID = ${id}`, (error) => {throw new Error(error)})
+        if (affectedRows === 0){
+            res.status(404).json ({msg: `No se puedo eliminar el usuario con el ID ${id}`})
+            return
+        } 
+
+        res.json({msg:`El usuario con el ID ${id} se elimno satisfactoriamente`})
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({json})
+
+    } finally{
+        if (conn){
+            conn.end()
+        }
+    }
+}
+
+module.exports= {getUser,getUserByID,deleteUserByID}
