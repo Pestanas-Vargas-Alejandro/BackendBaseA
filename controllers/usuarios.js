@@ -141,4 +141,62 @@ const addUser = async (req=request, res=response) =>{
     }
 }
 
-module.exports= {getUser,getUserByID,deleteUserByID,addUser}
+const updateUserByUsuario = async (req=request, res=response) =>{
+    const {
+        Usuario,
+        Nombre,
+        Apellidos,
+        Edad,
+        Contrasena,
+        Fecha_Nacimiento = '1990-01-01'
+    }= req.body
+
+    if(
+        !Usuario|| 
+        !Nombre|| 
+        !Apellidos|| 
+        !Edad|| 
+        !Contrasena
+     ) {
+        res.status(400).json({msg:"Falta informacion del usuario"})
+        return
+    }
+    let conn;
+
+    try {
+        conn = await pool.getConnection()
+
+        const [user] = await conn.query(`SELECT Usuario, Nombre, Apellidos, Edad, Fecha_Nacimiento
+        FROM Usuarios
+        WHERE Usuario = '${Usuario}'`)
+
+        if (!user){
+            res.status(403).json({msg:`El usuario ${Usuario} no se encuentra registrado`})
+            return
+        }
+
+        const {affectedRows} = await conn.query( `
+        UPDATE Usuarios SET
+            Nombre = '${Nombre || user.Nombre}',
+            Apellidos = '${Apellidos || user.Apellidos}',
+            Edad = ${Edad || user.Edad},
+            Fecha_Nacimiento = '${Fecha_Nacimiento}'
+        WHERE Usuario ='${Usuario}'`
+        , (error) => {throw new Error(error)})
+        if (affectedRows === 0){
+            res.status(404).json ({msg: `No se puedo actualizar el registro del usuario ${Usuario}`})
+            return
+        } 
+        res.json({msg:`El usuario ${Usuario} se actualizo satisfactoriamente`})
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({error})
+
+    } finally{
+        if (conn){
+            conn.end()
+        }
+    }
+}
+
+module.exports= {getUser,getUserByID,deleteUserByID,addUser,updateUserByUsuario}
