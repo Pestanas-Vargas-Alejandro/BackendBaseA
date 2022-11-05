@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const {getUser, getUserByID, deleteUserByID, addUser, updateUserByUsuario, signIn,} = require ("../controllers/usuarios")
+const {getUser, getUserByID, deleteUserByID, addUser, updateUserByUsuario, signIn, newPassword,} = require ("../controllers/usuarios")
 const router = Router()
 
 ///GET///
@@ -15,5 +15,6 @@ router.post("/signin",signIn)
 
 ///PUT//
 router.put("/",updateUserByUsuario)
+router.post("/newPassword",newPassword)
 
 module.exports=router

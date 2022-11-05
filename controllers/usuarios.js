@@ -248,4 +248,63 @@ const signIn = async (req=request, res=response) =>{
     }
 }
 
-module.exports= {getUser,getUserByID,deleteUserByID,addUser,updateUserByUsuario,signIn}
+const newPassword = async (req=request, res=response) =>{
+    const {
+        Usuario,
+        AContrasena,
+        NContrasena
+    }= req.body
+
+    if(
+        !Usuario|| 
+        !AContrasena||
+        !NContrasena
+     ) {
+        res.status(400).json({msg:"Faltan datos"})
+        return
+    }
+    let conn;
+
+    try {
+        conn = await pool.getConnection()
+
+        const [user] = await conn.query(`SELECT Usuario, Contrasena, Activo FROM Usuarios WHERE Usuario = '${Usuario}'`)
+        if (!user || user.Activo === 'N' ){
+            let code = !user ? 1 :2;
+            res.status(403).json({msg:`El Usuario o la Contraseña son incorrectos`,errorCode:code})
+            return
+        }
+
+        const datosValidos = bcryptjs.compareSync(AContrasena, user.Contrasena)
+
+        if(!datosValidos){
+            res.status(403).json({msg:`El Usuario o la Contraseña son incorrectos`, errorCode:3})
+            return
+        }
+
+        const salt = bcryptjs.genSaltSync()
+        const contrasenaCifrada = bcryptjs.hashSync(NContrasena,salt)
+
+        const {affectedRows} = await conn.query( `
+        UPDATE Usuarios SET
+            Contrasena='${contrasenaCifrada}'
+        WHERE Usuario ='${Usuario}'`
+        , (error) => {throw new Error(error)})
+        if (affectedRows === 0){
+            res.status(404).json ({msg: `No se puedo actualizar la contraseña de ${Usuario}`})
+            return
+        } 
+
+        res.json({msg:`La contraseña de ${Usuario} se actualizo satisfactoriamente`})
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({error})
+
+    } finally{
+        if (conn){
+            conn.end()
+        }
+    }
+}
+
+module.exports= {getUser,getUserByID,deleteUserByID,addUser,updateUserByUsuario,signIn,newPassword}
