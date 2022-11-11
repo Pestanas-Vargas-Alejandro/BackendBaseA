@@ -8,7 +8,7 @@ class Server{
         this.app = express()
         this.paths = {
             messages:"/api/v1/messages",
-            usuarios:"/api/v1/usuarios"
+            usuarios:"/api/v1/usuarios",
         }
         this.middelwares()
         this.routes()
