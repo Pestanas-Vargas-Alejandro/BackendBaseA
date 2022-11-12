@@ -1,6 +1,7 @@
 const express = require ('express')
 const messagesRouter = require ('./routes/messages')
 const usuariosRouter = require ('./routes/usuarios')
+const heroesRouter = require ('./routes/heroes')
 const cors = require ('cors')
 
 class Server{
@@ -9,6 +10,7 @@ class Server{
         this.paths = {
             messages:"/api/v1/messages",
             usuarios:"/api/v1/usuarios",
+            heroes:"/api/v1/heroes",
         }
         this.middelwares()
         this.routes()
@@ -17,6 +19,7 @@ class Server{
     routes(){      
         this.app.use(this.paths.messages, messagesRouter)
         this.app.use(this.paths.usuarios, usuariosRouter)
+        this.app.use(this.paths.heroes, heroesRouter)
     }
 
     middelwares (){

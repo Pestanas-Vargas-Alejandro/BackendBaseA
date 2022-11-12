@@ -12,9 +12,9 @@ router.delete("/",deleteUserByID)// http://localhost:4000/api/v1/usuarios/?id=1
 ///POST//
 router.post("/",addUser)
 router.post("/signin",signIn)
+router.post("/newPassword",newPassword)
 
 ///PUT//
 router.put("/",updateUserByUsuario)
-router.post("/newPassword",newPassword)
 
 module.exports=router
