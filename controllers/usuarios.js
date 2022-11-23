@@ -1,7 +1,7 @@
 const { request, response, json } = require("express")
 const bcryptjs = require("bcryptjs")
 const pool = require ("../db/connection")
-const modeloUsuarios = require("../models/usuarios");
+const {modeloUsuarios, updateUsuario} = require("../models/usuarios");
 
 const getUser = async (req=request, res=response) =>{
     let conn;
@@ -155,8 +155,7 @@ const updateUserByUsuario = async (req=request, res=response) =>{
         !Usuario|| 
         !Nombre|| 
         !Apellidos|| 
-        !Edad||
-        !Genero
+        !Edad
      ) {
         res.status(400).json({msg:"Falta informacion del usuario"})
         return
@@ -173,14 +172,14 @@ const updateUserByUsuario = async (req=request, res=response) =>{
             return
         }
 
-        const {affectedRows} = await conn.query(modeloUsuarios.queryUpdateByUsuario, [
-            Nombre || user.Nombre,
-            Apellidos || user.Apellidos,
-            Edad || user.Edad,
-            Genero || user.Genero,
+        const {affectedRows} = await conn.query(updateUsuario(
+            Nombre,
+            Apellidos,
+            Edad,
+            Genero,
             Fecha_Nacimiento,
             Usuario
-        ], (error)=>{throw new error})
+         ) , (error)=>{throw new error})
         
         if (affectedRows === 0){
             res.status(404).json ({msg: `No se puedo actualizar el registro del usuario ${Usuario}`})
